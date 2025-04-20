@@ -85,7 +85,7 @@
 
   <div class="login-container">
     <h2>Login</h2>
-    <form id="login-form" action="dashboard.html" method="POST">
+    <form id="login-form" action="index.html" method="POST">
       <!-- Username Input -->
       <input type="text" id="username" name="username" placeholder="Username" required />
       
@@ -169,7 +169,7 @@
       messageDiv.textContent = result.message;
       messageDiv.classList.remove("error-message");
       messageDiv.classList.add("success-message");
-      setTimeout(() => window.location.href = "dashboard.html", 1000);
+      setTimeout(() => window.location.href = "index.html", 1000);
     } else {
       messageDiv.textContent = result.message;
       messageDiv.classList.remove("success-message");
