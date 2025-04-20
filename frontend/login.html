@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Login Form Container */
+    .login-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    .login-container h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    /* Input Styles */
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input:focus {
+      outline-color: #3f51b5;
+    }
+
+    /* Button Styles */
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #303f9f;
+    }
+
+    /* Error Message */
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    /* Success Message */
+    .success-message {
+      color: green;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="login-form" action="dashboard.html" method="POST">
+      <!-- Username Input -->
+      <input type="text" id="username" name="username" placeholder="Username" required />
+      
+      <!-- Password Input -->
+      <input type="password" id="password" name="password" placeholder="Password" required />
+
+      <!-- Submit Button -->
+      <button type="submit">Login</button>
+
+      <!-- Error and Success Messages -->
+      <div id="message" class="error-message"></div>
+    </form>
+  </div>
+
+  <script>
+    // Password validation function
+    function validatePassword(password) {
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+      return passwordRegex.test(password);
+    }
+
+    // Form submission event listener
+    document.getElementById("login-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const messageDiv = document.getElementById("message");
+
+      // Clear previous messages
+      messageDiv.textContent = "";
+
+      // Check password validation
+      if (!validatePassword(password)) {
+        messageDiv.textContent = "Password must be at least 6 characters long, contain 1 uppercase letter, and 1 symbol.";
+      } else {
+        // Simulate a successful login
+        messageDiv.textContent = "Login Successful!";
+        messageDiv.classList.remove("error-message");
+        messageDiv.classList.add("success-message");
+        
+        // Redirect to the dashboard after a short delay
+        setTimeout(function() {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      }
+    });
+  </script>
+
+</body>
+</html>

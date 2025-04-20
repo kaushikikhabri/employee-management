@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee List</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f8fb;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e3a8a;
+      color: #fff;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .search-bar input {
+      width: 300px;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    table thead {
+      background-color: #1e40af;
+      color: #fff;
+    }
+
+    table th, table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    table tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-edit {
+      background-color: #2563eb;
+      color: #fff;
+    }
+
+    .btn-edit:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-delete {
+      background-color: #dc2626;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #b91c1c;
+    }
+
+    .no-results {
+      margin-top: 1rem;
+      text-align: center;
+      color: #9ca3af;
+      font-style: italic;
+    }
+    
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      background-color: #3f51b5;
+      color: white;
+      padding: 1rem 2rem;
+      align-items: center;
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">HRMS Dashboard</div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="employeeList.html">👥 Employees</a></li>
+      <li><a href="payroll.html">💼 Payroll</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by name or email..." onkeyup="filterEmployees()" />
+      <button class="btn btn-edit" onclick="window.location.href='addEmployee.html'">Add New Employee</button>
+    </div>
+    
+
+    <table id="employeeTable">
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be injected by JS -->
+      </tbody>
+    </table>
+
+    <p class="no-results" id="noResultsMsg" style="display: none;">No results found.</p>
+  </div>
+
+  <script>
+    let employees = JSON.parse(localStorage.getItem('employees')) || [];
+
+    function renderTable(data) {
+      const tableBody = document.querySelector("#employeeTable tbody");
+      tableBody.innerHTML = "";
+
+      if (data.length === 0) {
+        document.getElementById("noResultsMsg").style.display = "block";
+        return;
+      } else {
+        document.getElementById("noResultsMsg").style.display = "none";
+      }
+
+      data.forEach((emp, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${emp.name}</td>
+          <td>${emp.email}</td>
+          <td>${emp.department}</td>
+          <td>${emp.role}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editEmployee(${index})">Edit</button>
+            <button class="btn btn-delete" onclick="deleteEmployee(${index})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function filterEmployees() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = employees.filter(emp =>
+        emp.name.toLowerCase().includes(keyword) ||
+        emp.email.toLowerCase().includes(keyword)
+      );
+      renderTable(filtered);
+    }
+
+    function editEmployee(index) {
+      localStorage.setItem("editIndex", index);
+      window.location.href = "editEmployee.html";
+    }
+
+    function deleteEmployee(index) {
+      if (confirm("Are you sure you want to delete this employee?")) {
+        employees.splice(index, 1);
+        localStorage.setItem("employees", JSON.stringify(employees));
+        renderTable(employees);
+      }
+    }
+
+    window.onload = () => renderTable(employees);
+  </script>
+</body>
+</html>

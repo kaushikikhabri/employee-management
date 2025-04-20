@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add New Employee</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f8fb;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e3a8a;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: white;
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #2563eb;
+      outline: none;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .btn-submit, .btn-cancel {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-submit {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-cancel {
+      background-color: #6b7280;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background-color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Add New Employee</h1>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="employeeList.html">Employee List</a>
+      <a href="payroll.html">Payroll</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Employee Information</h2>
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" required />
+    </div>
+
+    <div class="form-group">
+      <label for="department">Department</label>
+      <select id="department" required>
+        <option value="Engineering">Engineering</option>
+        <option value="HR">HR</option>
+        <option value="Finance">Finance</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="role">Role</label>
+      <input type="text" id="role" required />
+    </div>
+
+    <div class="form-group">
+      <label for="salary">Salary</label>
+      <input type="number" id="salary" required />
+    </div>
+
+    <div class="form-group">
+      <label for="joinDate">Join Date</label>
+      <input type="date" id="joinDate" required />
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-submit" onclick="addEmployee()">Add</button>
+      <button class="btn-cancel" onclick="window.location.href='employeeList.html'">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    function addEmployee() {
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      const phoneRegex = /^\d{10}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      const newEmployee = {
+        name: document.getElementById("name").value,
+        email: email,
+        phone: phone,
+        department: document.getElementById("department").value,
+        role: document.getElementById("role").value,
+        salary: document.getElementById("salary").value,
+        joinDate: document.getElementById("joinDate").value
+      };
+
+      const employees = JSON.parse(localStorage.getItem('employees')) || [];
+      employees.push(newEmployee);
+      localStorage.setItem('employees', JSON.stringify(employees));
+
+      alert('New employee added successfully!');
+      window.location.href = 'employeeList.html';
+    }
+  </script>
+</body>
+</html>

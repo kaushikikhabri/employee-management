@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payroll Management</title>
+  <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      padding-bottom: 50px;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    h1, h2 {
+      margin-bottom: 1rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      background-color: #3f51b5;
+      color: white;
+      padding: 1rem 2rem;
+      align-items: center;
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      text-decoration: underline;
+    }
+
+    /* Page Header */
+    .page-header {
+      padding: 2rem;
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    /* Section Common */
+    section {
+      padding: 2rem;
+      background-color: white;
+      margin: 1rem auto;
+      max-width: 1200px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Pay Period Selector */
+    .pay-period-selector {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .pay-period-selector label {
+      font-weight: 600;
+    }
+
+    .pay-period-selector select {
+      padding: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .status.paid {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status.pending {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .status.failed {
+      color: red;
+      font-weight: bold;
+    }
+
+    /* Buttons */
+    .pay-now-btn,
+    .receipt-btn,
+    #export-csv,
+    #export-pdf {
+      padding: 0.5rem 1rem;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .pay-now-btn:hover,
+    .receipt-btn:hover,
+    #export-csv:hover,
+    #export-pdf:hover {
+      background-color: #303f9f;
+    }
+
+    /* Export Section */
+    .report-section button {
+      margin-right: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .pay-period-selector {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔷 Navbar -->
+  <nav class="navbar">
+    <div class="logo">HRMS Dashboard</div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="employeeList.html">👥 Employees</a></li>
+      <li><a href="payroll.html">💼 Payroll</a></li>
+    </ul>
+  </nav>
+
+  <!-- 🔷 Header -->
+  <header class="page-header">
+    <h1>Payroll Management</h1>
+    <p>Manage employee salaries and payment history.</p>
+  </header>
+
+  <!-- 🔷 Pay Period Selector -->
+  <section class="pay-period-selector">
+    <label for="month">Month:</label>
+    <select id="month">
+      <option>January 2025</option>
+    </select>
+
+    <label for="pay-period">Pay Period:</label>
+    <select id="pay-period">
+      <option>1st - 31st</option>
+    </select>
+  </section>
+
+  <!-- 🔷 Employee Payroll Table -->
+  <section class="payroll-table-section">
+    <h2>Employee Payroll</h2>
+    <table id="payroll-table">
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Department</th>
+          <th>Salary (₹)</th>
+          <th>Deductions (₹)</th>
+          <th>Net Pay (₹)</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jane Doe</td>
+          <td>HR</td>
+          <td>60,000</td>
+          <td>5,000</td>
+          <td>55,000</td>
+          <td class="status pending">Pending</td>
+          <td><a href="payment.html?name=Jane+Doe&amount=55000" class="pay-now-btn">Pay Now</a></td>
+        </tr>
+        <tr>
+          <td>John Smith</td>
+          <td>Tech</td>
+          <td>80,000</td>
+          <td>2,000</td>
+          <td>78,000</td>
+          <td class="status paid">Paid</td>
+          <td><button class="receipt-btn">✅ Receipt</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 🔷 Payment History -->
+  <section class="payment-history">
+    <h2>Payment History</h2>
+    <table id="history-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Employee</th>
+          <th>Amount</th>
+          <th>Mode</th>
+          <th>Status</th>
+          <th>Txn ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025-01-05</td>
+          <td>John Smith</td>
+          <td>78,000</td>
+          <td>UPI</td>
+          <td>Success</td>
+          <td>#TXN1234</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 🔷 Export and Reports -->
+  <section class="report-section">
+    <h2>Export & Reports</h2>
+    <button id="export-csv">Export CSV</button>
+    <button id="export-pdf">Generate PDF Report</button>
+  </section>
+
+</body>
+</html>

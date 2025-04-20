@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Gateway</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .payment-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .pay-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .pay-btn:hover {
+      background-color: #2c387e;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-box">
+    <h2>Pay Salary to <span id="emp-name"></span></h2>
+    <p>Amount: ₹<span id="pay-amount"></span></p>
+    <button class="pay-btn" onclick="startPayment()">Pay with Razorpay</button>
+  </div>
+
+  <script>
+    // Get query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get("name");
+    const amount = urlParams.get("amount");
+
+    document.getElementById("emp-name").textContent = name;
+    document.getElementById("pay-amount").textContent = amount;
+
+    function startPayment() {
+      const options = {
+        key: "YOUR_RAZORPAY_KEY", // Replace with your Razorpay key
+        amount: amount * 100, // Convert to paise
+        currency: "INR",
+        name: "Payroll Payment",
+        description: `Salary Payment to ${name}`,
+        handler: function (response) {
+          alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
+          // Optionally redirect to a success page or update DB here
+        },
+        prefill: {
+          name: name,
+          email: "employee@example.com", // Optional
+          contact: "9123456789", // Optional
+        },
+        theme: {
+          color: "#3f51b5",
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+  </script>
+</body>
+</html>
