@@ -126,7 +126,6 @@
       <a href="employeeList.html">Employee List</a>
     </nav>
   </header>
-
   <div class="container">
     <h2>Edit Employee Details</h2>
     <div class="edit-form-wrapper">
@@ -180,60 +179,104 @@
       </div>
     </div>
   </div>
-
   <script>
-    const employees = JSON.parse(localStorage.getItem('employees')) || [];
-    const editIndex = localStorage.getItem("editIndex");
-    const employee = employees[editIndex];
-
-    document.getElementById("name").value = employee.name;
-    document.getElementById("email").value = employee.email;
-    document.getElementById("phone").value = employee.phone;
-    document.getElementById("department").value = employee.department;
-    document.getElementById("role").value = employee.role;
-    document.getElementById("salary").value = employee.salary;
-    document.getElementById("joinDate").value = employee.joinDate;
-
+    // Retrieve the employee's ID from localStorage
+    const editEmployeeId = localStorage.getItem("editEmployeeId");
+  
+    if (editEmployeeId !== null) {
+      // Fetch the employee's details from the backend using the ID
+      fetch(`http://localhost:5000/employees/${editEmployeeId}`)
+        .then(response => response.json())
+        .then(employee => {
+          if (employee) {
+            // Populate the form fields with the employee's data
+            document.getElementById("name").value = employee.name;
+            document.getElementById("email").value = employee.email;
+            document.getElementById("phone").value = employee.phone;
+            document.getElementById("department").value = employee.department;
+            document.getElementById("role").value = employee.role;
+            document.getElementById("salary").value = employee.salary;
+            document.getElementById("joinDate").value = employee.joinDate;
+          } else {
+            alert("Employee not found.");
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching employee details:", err);
+          alert("Failed to load employee details.");
+        });
+    } else {
+      alert("No employee ID found.");
+    }
+  
     function enableEdit(field) {
       document.getElementById(field).disabled = false;
     }
-
+  
     function saveChanges() {
       const phone = document.getElementById("phone").value.trim();
       const email = document.getElementById("email").value.trim();
-
+  
       const phoneRegex = /^\d{10}$/;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  
       if (!phoneRegex.test(phone)) {
         alert("Phone number must be exactly 10 digits.");
         return;
       }
-
+  
       if (!emailRegex.test(email)) {
         alert("Please enter a valid email address.");
         return;
       }
-
-      const updatedEmployee = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        phone: phone,
-        department: document.getElementById("department").value,
-        role: document.getElementById("role").value,
-        salary: document.getElementById("salary").value,
-        joinDate: document.getElementById("joinDate").value
-      };
-
-      employees[editIndex] = updatedEmployee;
-      localStorage.setItem('employees', JSON.stringify(employees));
-      alert('Employee details updated successfully!');
-      window.location.href = 'employeeList.html';
+  
+      // Fetch the employee details again for updating
+      fetch(`http://localhost:5000/employees/${editEmployeeId}`)
+        .then(response => response.json())
+        .then(employee => {
+          if (employee) {
+            const updatedEmployee = {
+              ...employee, // Retain the original fields
+              name: document.getElementById("name").value,
+              email: document.getElementById("email").value,
+              phone: phone,
+              department: document.getElementById("department").value,
+              role: document.getElementById("role").value,
+              salary: document.getElementById("salary").value,
+              joinDate: document.getElementById("joinDate").value
+            };
+  
+            // Send the updated employee data to the backend
+            fetch(`http://localhost:5000/employees/${editEmployeeId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(updatedEmployee)
+            })
+            .then(res => {
+              if (res.ok) {
+                alert("Employee details updated successfully!");
+                window.location.href = 'employeeList.html'; // Redirect to employee list
+              } else {
+                alert("Failed to update employee details.");
+              }
+            })
+            .catch(err => {
+              console.error("Error updating employee:", err);
+              alert("Failed to update employee details.");
+            });
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching employee details for update:", err);
+        });
     }
-
+  
     function cancelEdit() {
       window.location.href = 'employeeList.html';
     }
   </script>
+  
 </body>
 </html>

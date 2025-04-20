@@ -171,19 +171,30 @@
   </div>
 
   <script>
-    let employees = JSON.parse(localStorage.getItem('employees')) || [];
+    
+    let employees = [];
+
+    async function fetchEmployees(search = "") {
+      try {
+        const res = await fetch(`http://localhost:5000/employees?search=${encodeURIComponent(search)}`);
+        employees = await res.json();
+        renderTable(employees);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    }
 
     function renderTable(data) {
       const tableBody = document.querySelector("#employeeTable tbody");
       tableBody.innerHTML = "";
-
+    
       if (data.length === 0) {
         document.getElementById("noResultsMsg").style.display = "block";
         return;
       } else {
         document.getElementById("noResultsMsg").style.display = "none";
       }
-
+    
       data.forEach((emp, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -192,8 +203,8 @@
           <td>${emp.department}</td>
           <td>${emp.role}</td>
           <td>
-            <button class="btn btn-edit" onclick="editEmployee(${index})">Edit</button>
-            <button class="btn btn-delete" onclick="deleteEmployee(${index})">Delete</button>
+            <button class="btn btn-edit" onclick="editEmployee(${emp.id})">Edit</button>
+            <button class="btn btn-delete" onclick="deleteEmployee(${emp.id})">Delete</button>
           </td>
         `;
         tableBody.appendChild(row);
@@ -201,28 +212,40 @@
     }
 
     function filterEmployees() {
-      const keyword = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = employees.filter(emp =>
-        emp.name.toLowerCase().includes(keyword) ||
-        emp.email.toLowerCase().includes(keyword)
-      );
-      renderTable(filtered);
+      const keyword = document.getElementById("searchInput").value;
+      fetchEmployees(keyword);
     }
 
-    function editEmployee(index) {
-      localStorage.setItem("editIndex", index);
+    function editEmployee(id) {
+  // Save the employee id in localStorage before navigating to the edit page
+      localStorage.setItem("editEmployeeId", id);
+      console.log("id: ", id)
       window.location.href = "editEmployee.html";
     }
 
-    function deleteEmployee(index) {
-      if (confirm("Are you sure you want to delete this employee?")) {
-        employees.splice(index, 1);
-        localStorage.setItem("employees", JSON.stringify(employees));
-        renderTable(employees);
-      }
-    }
 
-    window.onload = () => renderTable(employees);
+    async function deleteEmployee(id) {
+    if (confirm("Are you sure you want to delete this employee?")) {
+    try {
+      const res = await fetch(`http://localhost:5000/employees/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        fetchEmployees(); // Re-fetch and re-render
+      } else {
+        console.error("Failed to delete employee");
+      }
+    } catch (err) {
+      console.error("Error deleting employee:", err);
+    }
+  }
+}
+
+
+    // Hook on page load
+    window.onload = () => fetchEmployees();
+
   </script>
 </body>
 </html>
