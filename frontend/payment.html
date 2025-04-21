@@ -40,7 +40,7 @@
   <div class="payment-box">
     <h2>Pay Salary to <span id="emp-name"></span></h2>
     <p>Amount: ₹<span id="pay-amount"></span></p>
-    <button class="pay-btn" onclick="startPayment()">Pay with Razorpay</button>
+    <button class="pay-btn" onclick="startPayment()">Pay </button>
   </div>
 
   <script>
@@ -49,7 +49,9 @@
     const name = urlParams.get("name");
     const amount = urlParams.get("amount");
 
-    document.getElementById("emp-name").textContent = name;
+    // document.getElementById("emp-name").textContent = name;
+    document.getElementById("emp-name").innerHTML = name; //key for cross site scripting
+
     document.getElementById("pay-amount").textContent = amount;
 
     function startPayment() {
@@ -78,4 +80,5 @@
     }
   </script>
 </body>
-</html>
+</html> 
+
