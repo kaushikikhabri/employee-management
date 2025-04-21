@@ -166,40 +166,57 @@
   </div>
 
   <script>
-    function addEmployee() {
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
+    async function addEmployee() {
+  const phone = document.getElementById("phone").value.trim();
+  const email = document.getElementById("email").value.trim();
 
-      const phoneRegex = /^\d{10}$/;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^\d{10}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!phoneRegex.test(phone)) {
-        alert("Phone number must be exactly 10 digits.");
-        return;
-      }
+  if (!phoneRegex.test(phone)) {
+    alert("Phone number must be exactly 10 digits.");
+    return;
+  }
 
-      if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
-        return;
-      }
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
 
-      const newEmployee = {
-        name: document.getElementById("name").value,
-        email: email,
-        phone: phone,
-        department: document.getElementById("department").value,
-        role: document.getElementById("role").value,
-        salary: document.getElementById("salary").value,
-        joinDate: document.getElementById("joinDate").value
-      };
+  const newEmployee = {
+    name: document.getElementById("name").value.trim(),
+    email: email,
+    phone: phone,
+    department: document.getElementById("department").value,
+    role: document.getElementById("role").value.trim(),
+    salary: parseFloat(document.getElementById("salary").value),
+    join_date: document.getElementById("joinDate").value
+  };
 
-      const employees = JSON.parse(localStorage.getItem('employees')) || [];
-      employees.push(newEmployee);
-      localStorage.setItem('employees', JSON.stringify(employees));
+  console.log("New Employee Data: ", newEmployee); // Add this line to check the data being sent
 
-      alert('New employee added successfully!');
-      window.location.href = 'employeeList.html';
+  try {
+    const response = await fetch("http://localhost:5000/employees", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newEmployee)
+    });
+
+    if (response.ok) {
+      alert("New employee added successfully!");
+      window.location.href = "employeeList.html";
+    } else {
+      const errorData = await response.json();
+      alert("Error: " + errorData.message || "Failed to add employee.");
     }
+  } catch (error) {
+    console.error("Error adding employee:", error);
+    alert("An error occurred while adding the employee.");
+  }
+}
+
   </script>
 </body>
 </html>
