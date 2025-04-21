@@ -11,7 +11,8 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend to communicate
 
 # Replace these credentials with yours
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:swing@localhost:5432/employee-db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:swing@localhost:5432/employee-db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://neondb_owner:npg_8JtUs6WTRrCM@ep-little-base-a52e0908-pooler.us-east-2.aws.neon.tech:5432/neondb'
 db = SQLAlchemy(app)
 
 # Define your model
