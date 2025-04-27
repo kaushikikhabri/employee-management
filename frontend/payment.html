@@ -43,16 +43,19 @@
     <button class="pay-btn" onclick="startPayment()">Pay </button>
   </div>
 
-  <script>
+  <!-- <script>
     // Get query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get("name");
     const amount = urlParams.get("amount");
 
     // document.getElementById("emp-name").textContent = name;
-    document.getElementById("emp-name").innerHTML = name; //key for cross site scripting
+    // document.getElementById("emp-name").innerHTML = name; //key for cross site scripting
 
-    document.getElementById("pay-amount").innerHTML = amount;
+    // document.getElementById("pay-amount").innerHTML = amount;
+    document.getElementById("emp-name").textContent = name; //key for cross site scripting
+
+    document.getElementById("pay-amount").textContent = amount;
 
     function startPayment() {
       const options = {
@@ -78,7 +81,140 @@
       const rzp = new Razorpay(options);
       rzp.open();
     }
-  </script>
+  </script> -->
+
+  <script>
+  // Helper function to safely sanitize name
+  function sanitizeName(name) {
+    // Allow only letters, spaces, dots, hyphens
+    const safeName = name.match(/^[a-zA-Z\s\.\-]{1,100}$/);
+    return safeName ? name : null;
+  }
+
+  // Helper function to safely sanitize amount
+  function sanitizeAmount(amount) {
+    // Allow only digits, optional decimal
+    const safeAmount = amount.match(/^\d+(\.\d{1,2})?$/);
+    return safeAmount ? amount : null;
+  }
+
+  // Get query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const rawName = urlParams.get("name");
+  const rawAmount = urlParams.get("amount");
+
+  const name = sanitizeName(rawName);
+  const amount = sanitizeAmount(rawAmount);
+
+  // Populate safely
+  if (name !== null) {
+    document.getElementById("emp-name").textContent = name;
+  } else {
+    document.getElementById("emp-name").textContent = "(Invalid Name)";
+  }
+
+  if (amount !== null) {
+    document.getElementById("pay-amount").textContent = amount;
+  } else {
+    document.getElementById("pay-amount").textContent = "0";
+  }
+
+  function startPayment() {
+    const currentName = document.getElementById("emp-name").textContent;
+    const currentAmount = document.getElementById("pay-amount").textContent;
+
+    if (currentName === "(Invalid Name)" || currentAmount === "0") {
+      alert("Invalid payment details. Cannot proceed.");
+      return;
+    }
+
+    const options = {
+      key: "YOUR_RAZORPAY_KEY", // Replace with your Razorpay key
+      amount: parseFloat(currentAmount) * 100, // Convert to paise
+      currency: "INR",
+      name: "Payroll Payment",
+      description: `Salary Payment to ${currentName}`,
+      handler: function (response) {
+        alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
+      },
+      prefill: {
+        name: currentName,
+        email: "employee@example.com", // Optional
+        contact: "9123456789", // Optional
+      },
+      theme: {
+        color: "#3f51b5",
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  }
+</script>
+
+<script>
+  // Helper function to safely sanitize name
+  function sanitizeName(name) {
+    // Allow only letters, spaces, dots, hyphens (common in names)
+    const safeName = name.match(/^[a-zA-Z\s\.\-]{1,100}$/);
+    return safeName ? name : null;
+  }
+
+  // Helper function to safely sanitize amount
+  function sanitizeAmount(amount) {
+    // Allow only digits, optional 1-2 decimal places (for money)
+    const safeAmount = amount.match(/^\d+(\.\d{1,2})?$/);
+    return safeAmount ? amount : null;
+  }
+
+  // Run when DOM is ready
+  document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawName = urlParams.get("name");
+    const rawAmount = urlParams.get("amount");
+
+    const name = sanitizeName(rawName);
+    const amount = sanitizeAmount(rawAmount);
+
+    // If either name or amount is invalid, block immediately
+    if (name === null || amount === null) {
+      document.body.innerHTML = "<h2 style='color:red;'>Invalid Payment Details</h2>";
+      return;
+    }
+
+    // Safely populate fields
+    document.getElementById("emp-name").textContent = name;
+    document.getElementById("pay-amount").textContent = amount;
+
+    window.startPayment = function () {
+      const currentName = document.getElementById("emp-name").textContent;
+      const currentAmount = document.getElementById("pay-amount").textContent;
+
+      const options = {
+        key: "YOUR_RAZORPAY_KEY", // Replace with your Razorpay key
+        amount: parseFloat(currentAmount) * 100, // Convert to paise
+        currency: "INR",
+        name: "Payroll Payment",
+        description: `Salary Payment to ${currentName}`,
+        handler: function (response) {
+          alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
+        },
+        prefill: {
+          name: currentName,
+          email: "employee@example.com",
+          contact: "9123456789",
+        },
+        theme: {
+          color: "#3f51b5",
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+  });
+</script>
+
 </body>
 </html> 
 
