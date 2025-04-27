@@ -4,7 +4,7 @@ from flask_cors import CORS
 from sqlalchemy import text
 from datetime import datetime
 import re
-
+from werkzeug.security import check_password_hash
 
 
 app = Flask(__name__)
@@ -35,15 +35,23 @@ def login():
     #     return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
     
     # 🚨 INSECURE version using raw SQL
-    query = text(f"SELECT * FROM login WHERE email = '{email}' AND password = '{password}'")
-    result = db.session.execute(query).fetchone()
+    # query = text(f"SELECT * FROM login WHERE email = '{email}' AND password = '{password}'")
+    # result = db.session.execute(query).fetchone()
+
+    # if result:
+    #     return jsonify({'success': True, 'message': 'Login successful!'}), 200
+    # else:
+    #     return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
+
+
+      # 🚀 SECURE Raw SQL using bind parameters
+    query = text("SELECT * FROM login WHERE email = :email AND password = :password")
+    result = db.session.execute(query, {"email": email, "password": password}).fetchone()
 
     if result:
         return jsonify({'success': True, 'message': 'Login successful!'}), 200
     else:
         return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
-
-
 
 # Employee Model
 class Employee(db.Model):
