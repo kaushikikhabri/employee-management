@@ -165,7 +165,9 @@
     </div>
   </div>
 
-  <script>
+  <!-- <script>
+
+    
     async function addEmployee() {
   const phone = document.getElementById("phone").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -217,6 +219,89 @@
   }
 }
 
+  </script> -->
+
+  <script>
+    function containsHTMLTags(input) {
+      const tagRegex = /<[^>]*>/g;
+      return tagRegex.test(input);
+    }
+  
+    async function addEmployee() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const department = document.getElementById("department").value;
+      const role = document.getElementById("role").value.trim();
+      const salary = document.getElementById("salary").value.trim();
+      const joinDate = document.getElementById("joinDate").value;
+  
+      const phoneRegex = /^\d{10}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+      // Check for HTML tags in text fields
+      const fieldsToCheck = [name, role];
+      for (const field of fieldsToCheck) {
+        if (containsHTMLTags(field)) {
+          alert("Invalid input detected. HTML tags are not allowed.");
+          return;
+        }
+      }
+  
+      if (!phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+  
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+  
+      if (isNaN(salary) || salary <= 0) {
+        alert("Please enter a valid positive salary amount.");
+        return;
+      }
+  
+      if (!joinDate) {
+        alert("Please select a valid join date.");
+        return;
+      }
+  
+      const newEmployee = {
+        name: name,
+        email: email,
+        phone: phone,
+        department: department,
+        role: role,
+        salary: parseFloat(salary),
+        join_date: joinDate
+      };
+  
+      console.log("New Employee Data: ", newEmployee);
+  
+      try {
+        const response = await fetch("http://localhost:5000/employees", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newEmployee)
+        });
+  
+        if (response.ok) {
+          alert("New employee added successfully!");
+          window.location.href = "employeeList.html";
+        } else {
+          const errorData = await response.json();
+          alert("Error: " + (errorData.message || "Failed to add employee."));
+        }
+      } catch (error) {
+        console.error("Error adding employee:", error);
+        alert("An error occurred while adding the employee.");
+      }
+    }
   </script>
+  
 </body>
 </html>
